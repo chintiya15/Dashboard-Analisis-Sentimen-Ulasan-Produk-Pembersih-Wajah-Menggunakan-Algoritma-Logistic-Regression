@@ -1,0 +1,205 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap");
+
+/* ================= GLOBAL ================= */
+
+html,
+body,
+[class*="css"],
+.stApp {
+  background-color: #ffffff !important;
+  font-family: "Montserrat", sans-serif !important;
+  color: #262730 !important;
+}
+
+/* Hilangkan header Streamlit */
+header[data-testid="stHeader"] {
+  background-color: rgba(255, 255, 255, 0) !important;
+}
+[data-testid="stDecoration"] {
+  display: none !important;
+}
+
+/* Hilangkan link default app */
+[data-testid="stSidebarNav"] ul li:first-child {
+  display: none !important;
+}
+
+/* ================= SIDEBAR ================= */
+
+[data-testid="stSidebar"] {
+  background: #3498db !important;
+  padding: 30px 22px;
+}
+
+/* reset list */
+[data-testid="stSidebarNav"] ul {
+  padding: 0 !important;
+}
+
+[data-testid="stSidebarNav"] li {
+  list-style: none;
+  margin-bottom: 14px;
+}
+
+/* ================= BUTTON ================= */
+
+[data-testid="stSidebarNav"] a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 58px;
+  border-radius: 20px;
+  border: 2px solid rgba(0, 0, 0, 0.5);
+
+  background: transparent;
+
+  font-weight: 900;
+  font-size: 25px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+
+  text-decoration: none !important;
+
+  transition: all 0.25s ease;
+}
+
+/* paksa teks putih */
+[data-testid="stSidebarNav"] a span {
+  color: #ffffff !important;
+}
+
+/* ================= HOVER ================= */
+
+[data-testid="stSidebarNav"] a:hover {
+  background: rgba(255, 255, 255, 0.95) !important;
+}
+
+[data-testid="stSidebarNav"] a:hover span {
+  color: #3498db !important;
+}
+
+/* ================= ACTIVE ================= */
+
+[data-testid="stSidebarNav"] a[aria-current="page"] {
+  background: rgba(255, 255, 255, 0.92) !important;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+[data-testid="stSidebarNav"] a[aria-current="page"] span {
+  color: #3498db !important;
+}
+
+/* ================= HEADER ================= */
+
+.blue-header {
+  background-color: #3498db;
+  padding: 18px 30px;
+  border-radius: 15px;
+  color: white !important;
+  font-weight: 900;
+  font-size: 28px;
+  text-align: center;
+  margin-bottom: 25px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* ================= METRIC ================= */
+
+.metric-card {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 15px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.metric-title {
+  font-size: 16px;
+  color: #7f8c8d;
+  font-weight: 700;
+}
+
+.metric-value {
+  font-size: 32px;
+  font-weight: 900;
+  color: #3498db;
+}
+
+/* ================= INPUT ================= */
+
+.stTextInput input,
+.stTextArea textarea {
+  background-color: #ffffff !important;
+  color: #262730 !important;
+  border: 2px solid #3498db !important; /* ✅ tetap ada garis */
+  border-radius: 12px;
+  padding: 12px;
+  font-weight: 500;
+}
+
+/* ================= DROPDOWN CLEAN ================= */
+
+.stSelectbox [data-baseweb="select"] {
+  background: #ffffff !important;
+  border: none !important; /* hilang garis kotak */
+  border-radius: 12px;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.18) !important; /* ✅ modern glow */
+  padding: 6px;
+}
+
+/* hover */
+.stSelectbox [data-baseweb="select"]:hover {
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.28) !important;
+}
+
+/* focus */
+.stSelectbox [data-baseweb="select"]:focus-within {
+  box-shadow: 0 0 0 2.5px rgba(52, 152, 219, 0.45) !important;
+}
+
+/* hilangkan outline default */
+.stSelectbox * {
+  outline: none !important;
+}
+
+/* ================= BUTTON ================= */
+
+.stButton > button,
+.stDownloadButton > button {
+  background-color: #3498db !important;
+  color: white !important;
+  border-radius: 12px;
+  border: none;
+  padding: 10px 35px;
+  font-weight: 900;
+  transition: 0.3s ease;
+}
+
+.stButton > button:hover {
+  background-color: #2980b9 !important;
+  transform: scale(1.03);
+}
+
+/* ================= INFO ================= */
+
+.stInfo {
+  background-color: #e3f2fd !important;
+  color: #1976d2 !important;
+  border-radius: 10px;
+}
+
+.stSuccess {
+  background-color: #e8f5e9 !important;
+  color: #2e7d32 !important;
+  border-radius: 10px;
+}
+
+/* ================= UPLOAD ================= */
+
+.stFileUploader section {
+  background-color: #f8f9fa !important;
+  border: 2px dashed #3498db !important;
+  border-radius: 15px;
+}

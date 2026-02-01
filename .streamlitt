@@ -1,0 +1,10 @@
+[theme]
+base="light"
+primaryColor="#3498db"
+backgroundColor="#FFFFFF"
+secondaryBackgroundColor="#3498db"
+textColor="#262730"
+
+[ui]
+# Menghapus menu 'Settings' agar user tidak bisa iseng ganti tema
+hideSidebarNav = false
