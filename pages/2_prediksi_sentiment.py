@@ -5,137 +5,185 @@ import pandas as pd
 import os
 
 # ==============================================================================
-# 1. KONFIGURASI HALAMAN (Wajib di bagian paling atas)
+# 1. KONFIGURASI HALAMAN
 # ==============================================================================
 st.set_page_config(
     page_title="Prediksi Sentimen - Analisis Produk",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    layout="wide"
 )
 
 # ==============================================================================
-# 2. CUSTOM CSS (MENGHAPUS TOP BAR HITAM & STYLING WARNA)
+# 2. CUSTOM CSS
 # ==============================================================================
 def load_css():
     css_path = os.path.join("assets", "style.css")
-    with open(css_path) as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+    if os.path.exists(css_path):
+        with open(css_path) as f:
+            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 load_css()
 
 # ==============================================================================
-# 3. LOAD MODEL & MAPPING
+# 3. LOAD MODEL FINAL (SMOTE) & TF-IDF
 # ==============================================================================
-model, tfidf = load_model()
+try:
+    # load_model() HARUS mengembalikan model SMOTE
+    model, tfidf = load_model()
+except:
+    st.error("⚠️ Model atau TF-IDF gagal dimuat. Pastikan file model tersedia.")
+    st.stop()
 
+# ==============================================================================
+# 4. LABEL MAPPING
+# ==============================================================================
 label_mapping = {
     0: "Negatif",
-    1: "Netral",
-    2: "Positif"
+    1: "Positif"
 }
 
 # ==============================================================================
-# 4. CONTENT - HEADER & INFO
+# 5. HEADER & INFO
 # ==============================================================================
-st.markdown('<div class="blue-header">📝 PREDIKSI SENTIMEN ULASAN</div>', unsafe_allow_html=True)
+st.markdown(
+    '<div class="blue-header">📝 PREDIKSI SENTIMEN ULASAN</div>',
+    unsafe_allow_html=True
+)
 
-st.markdown("<p style='text-align:center; color: #7f8c8d; margin-bottom:30px;'>Ketahui sentimen pelanggan terhadap produk Anda dalam hitungan detik</p>", unsafe_allow_html=True)
+st.markdown(
+    "<p style='text-align:center; color:#7f8c8d; margin-bottom:25px;'>"
+    "Masukkan ulasan pengguna tentang produk pembersih wajah untuk mengetahui sentimen terhadap produk pembersih wajah."
+    "</p>",
+    unsafe_allow_html=True
+)
 
-col_info1, col_info2 = st.columns(2)
-with col_info1:
-    st.markdown(
-        """
-        <div style="
-            background-color:#E8F2FF;
-            padding:15px;
-            border-radius:10px;
-            font-weight:600;
-            color:#3498DB;
-            text-align:left;
-            font-size:18px;
-        ">
-            🤖 Model: Logistic Regression
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-    # st.info("🤖 **Model:** Logistic Regression")
-with col_info2:
-    st.markdown(
-        """
-        <div style="
-            background-color:#e9f7ef;
-            padding:15px;
-            border-radius:10px;
-            font-weight:600;
-            color:#158237;
-            text-align:left;
-            font-size:18px;
-        ">
-            🎯 Akurasi Model: 72.00%
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+# col_info1, col_info2 = st.columns(2)
 
+# with col_info1:
+#     st.markdown(
+#         """
+#         <div style="
+#             background-color:#E8F2FF;
+#             padding:15px;
+#             border-radius:10px;
+#             font-weight:600;
+#             color:#3498DB;
+#             font-size:18px;
+#         ">
+#             🤖 Model: Logistic Regression (SMOTE)
+#         </div>
+#         """,
+#         unsafe_allow_html=True
+#     )
 
-st.markdown("---")
+# with col_info2:
+#     st.markdown(
+#         """
+#         <div style="
+#             background-color:#e9f7ef;
+#             padding:15px;
+#             border-radius:10px;
+#             font-weight:600;
+#             color:#158237;
+#             font-size:18px;
+#         ">
+#             🎯 Akurasi Model: 78.00%
+#         </div>
+#         """,
+#         unsafe_allow_html=True
+#     )
+
+# st.caption(
+#     "Catatan: Model telah dilatih menggunakan teknik SMOTE untuk mengatasi ketidakseimbangan data latih."
+# )
+
+# st.markdown("---")
 
 # ==============================================================================
-# 5. CONTENT - INPUT AREA
+# 6. INPUT TEXT
 # ==============================================================================
 text = st.text_area(
     "Masukkan ulasan produk pembersih wajah:",
-    placeholder="Contoh: pembersih wajah ini sangat lembut dan tidak membuat kulit kering",
+    placeholder="Contoh: Produk ini sangat bagus dan membuat wajah terasa segar.",
     height=150
 )
 
 # ==============================================================================
-# 6. LOGIC PREDIKSI
+# 7. PROSES PREDIKSI
 # ==============================================================================
 if st.button("🔍 Mulai Prediksi"):
+
     if text.strip() == "":
         st.warning("⚠️ Harap masukkan teks ulasan terlebih dahulu.")
+        st.stop()
+
+    with st.spinner("Sedang memproses ulasan..."):
+
+        # -----------------------------
+        # PREPROCESSING
+        # -----------------------------
+        hasil = full_preprocessing(text)
+
+        # TF-IDF transform
+        vec = tfidf.transform([hasil["stemming_data"]])
+
+        # -----------------------------
+        # PREDIKSI
+        # -----------------------------
+        pred = model.predict(vec)[0]
+        proba = model.predict_proba(vec)[0]
+
+        sentimen = label_mapping[pred]
+
+    st.markdown("---")
+
+    # ==============================================================================
+    # 8. HASIL UTAMA
+    # ==============================================================================
+    st.subheader("📊 Hasil Prediksi Sentimen")
+
+    if sentimen == "Positif":
+        st.success(f"### 😊 Sentimen Ulasan: **{sentimen}**")
     else:
-        with st.spinner('Sedang memproses teks...'):
-            # Preprocessing
-            hasil = full_preprocessing(text)
-            vec = tfidf.transform([hasil['stemming_data']])
+        st.error(f"### 😠 Sentimen Ulasan: **{sentimen}**")
 
-            # Prediksi
-            pred = model.predict(vec)[0]
-            proba = model.predict_proba(vec)[0]
-            sentimen = label_mapping[pred]
+    # ==============================================================================
+    # 9. PROBABILITAS MODEL
+    # ==============================================================================
+    st.subheader("📈 Probabilitas Keyakinan Model")
 
-            st.markdown("---")
+    prob_df = pd.DataFrame({
+        "Sentimen": ["Negatif", "Positif"],
+        "Probabilitas": proba
+    })
 
-            # --- HASIL UTAMA ---
-            st.subheader("📊 Hasil Analisis")
-            
-            if sentimen == "Positif":
-                st.success(f"### 😊 Sentimen: **{sentimen}**")
-            elif sentimen == "Netral":
-                st.info(f"### 😐 Sentimen: **{sentimen}**")
-            else:
-                st.error(f"### 😠 Sentimen: **{sentimen}**")
+    st.dataframe(prob_df, use_container_width=True)
+    st.bar_chart(prob_df.set_index("Sentimen"))
 
-            # --- GRAFIK PROBABILITAS ---
-            st.markdown("<br>", unsafe_allow_html=True)
-            st.subheader("📈 Probabilitas Keyakinan Model")
-            
-            prob_df = pd.DataFrame({
-                "Sentimen": ["Negatif", "Netral", "Positif"],
-                "Probabilitas": proba
-            })
-            
-            st.bar_chart(prob_df.set_index("Sentimen"))
+    # ==============================================================================
+    # 10. KESIMPULAN OTOMATIS
+    # ==============================================================================
+    st.markdown("---")
+    st.subheader("📝 Kesimpulan Analisis")
 
-            # --- DETAIL PREPROCESSING ---
-            with st.expander("🔎 Lihat Detail Tahapan Pembersihan Teks"):
-                st.write("**Teks Asli:**", text)
-                st.write("**1. Cleaning:**", hasil["cleaning"])
-                st.write("**2. Case Folding:**", hasil["case_folding"])
-                st.write("**3. Normalisasi:**", hasil["normalisasi"])
-                st.write("**4. Tokenizing:**", hasil["tokenize"])
-                st.write("**5. Stopword Removal:**", hasil["stopword_removal"])
-                st.write("**6. Stemming (Final):**", hasil["stemming_data"])
+    if sentimen == "Positif":
+        st.success(
+            "Hasil prediksi menunjukkan bahwa ulasan memiliki sentimen **positif**, "
+            "yang mengindikasikan kepuasan pengguna terhadap produk pembersih wajah."
+        )
+    else:
+        st.warning(
+            "Hasil prediksi menunjukkan bahwa ulasan memiliki sentimen **negatif**, "
+            "yang mengindikasikan adanya ketidakpuasan pengguna terhadap produk pembersih wajah."
+        )
+
+    # ==============================================================================
+    # 11. DETAIL PREPROCESSING
+    # ==============================================================================
+    with st.expander("🔎 Lihat Detail Tahapan Preprocessing"):
+        st.write("**Teks Asli:**", text)
+        st.write("**1. Cleaning:**", hasil["cleaning"])
+        st.write("**2. Case Folding:**", hasil["case_folding"])
+        st.write("**3. Normalisasi:**", hasil["normalisasi"])
+        st.write("**4. Tokenizing:**", hasil["tokenize"])
+        st.write("**5. Stopword Removal:**", hasil["stopword_removal"])
+        st.write("**6. Stemming (Final):**", hasil["stemming_data"])

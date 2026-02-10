@@ -1,5 +1,6 @@
 import joblib
 
 def load_model():
-    saved = joblib.load("model_sentimen_logistic_regression.pkl")
-    return saved['model'], saved['tfidf']
+    model = joblib.load("model_sentimen_smoote.pkl")
+    tfidf = joblib.load("tfidf_vectorizer.pkl")
+    return model, tfidf
