@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from utils.loader import load_model
-from utils.preprocessing import full_preprocessing
+from utils.preprocessing import preprocessing_data
 import os
 
 # =============================
@@ -52,7 +52,7 @@ if st.button("📈 Analisis Probabilitas"):
     if text.strip() == "":
         st.warning("⚠️ Silakan masukkan teks terlebih dahulu.")
     else:
-        hasil = full_preprocessing(text)
+        hasil = preprocessing_data(text)
         vec = tfidf.transform([hasil["stemming_data"]])
         prob = model.predict_proba(vec)[0]
         pred = model.predict(vec)[0]

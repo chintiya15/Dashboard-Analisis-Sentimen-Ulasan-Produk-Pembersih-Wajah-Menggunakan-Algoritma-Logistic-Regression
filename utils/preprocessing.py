@@ -22,17 +22,17 @@ kamus_tidak_baku = dict(zip(kamus_df['tidak_baku'], kamus_df['kata_baku']))
 # ============================
 # FULL PREPROCESSING
 # ============================
-def full_preprocessing(text):
+def preprocessing_data(text):
 
     # 1. Cleaning
     cleaning = re.sub(r'https?://\S+|www\.\S+', '', text)  # URL
     cleaning = re.sub(r'<.*?>', '', cleaning)             # HTML
     cleaning = re.sub(r'@\w+', '', cleaning)              # Mention
 
-    # ✅ Hapus ordinal seperti 1st, 2nd, 3rd, 4th
+    # Hapus ordinal seperti 1st, 2nd, 3rd, 4th
     cleaning = re.sub(r'\b\d+(st|nd|rd|th)\b', '', cleaning, flags=re.IGNORECASE)
 
-    # ✅ Hapus harga format Rp (Rp20.000, rp 15,000, RP10000)
+    # Hapus harga format Rp (Rp20.000, rp 15,000, RP10000)
     cleaning = re.sub(r'(?i)rp\s?\d+([.,]\d+)*', '', cleaning)
 
     # Hapus angka biasa

@@ -12,11 +12,10 @@ def is_valid_text_column(series: pd.Series) -> bool:
     if len(texts) == 0:
         return False
 
-    # ❌ tolak timestamp
     if is_datetime_column(texts):
         return False
 
-    # rata-rata panjang karakter
+    # rata-rata panjang kata
     if texts.str.len().mean() < 20:
         return False
 
@@ -24,7 +23,6 @@ def is_valid_text_column(series: pd.Series) -> bool:
     if texts.str.split().apply(len).mean() < 5:
         return False
 
-    # variasi kosakata (hindari format kaku)
     vocab_ratio = (
         texts.str.split()
         .explode()
