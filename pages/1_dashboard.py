@@ -45,16 +45,16 @@ model, tfidf = load_model()
 # 4. DATA PENGUJIAN HASIL SENTIMEN
 # ==============================================================================
 # Confusion Matrix Data: [[TN, FP], [FN, TP]]
-cm_data = [[6, 33], [2, 194]]
-tn, fp, fn, tp = 6, 33, 2, 194
+cm_data = [[4, 35], [0, 196]]
+tn, fp, fn, tp = 4, 35, 0, 196
 
 # Data Classification Report Manual
 report_dict = {
-    "Negatif": {"precision": 1.00, "recall": 0.08, "f1-score": 0.14, "support": 39},
-    "Positif": {"precision": 0.85, "recall": 1.00, "f1-score": 0.92, "support": 197},
-    "accuracy": 0.85,
-    "macro avg": {"precision": 0.92, "recall": 0.54, "f1-score": 0.53, "support": 236},
-    "weighted avg": {"precision": 0.87, "recall": 0.85, "f1-score": 0.79, "support": 236}
+    "Negatif": {"precision": 1.0000, "recall": 0.1026, "f1-score": 0.1860, "support": 39},
+    "Positif": {"precision": 0.8485, "recall": 1.0000, "f1-score": 0.9180, "support": 196},
+    "accuracy": 0.8511,
+    "macro avg": {"precision": 0.9242, "recall": 0.5513, "f1-score": 0.5520, "support": 235},
+    "weighted avg": {"precision": 0.8736, "recall": 0.8511, "f1-score": 0.7966, "support": 235}
 }
 
 akurasi_asli = report_dict["accuracy"]
@@ -104,17 +104,44 @@ with col2:
 with col3:
     metric_card("😠 Negatif", jumlah_sentimen.get("Negatif", 0))
 with col4:
-    metric_card("🎯 Akurasi Uji", f"{akurasi_asli*100:.2f}%")
+    metric_card("🎯 Akurasi Test", f"{akurasi_asli*100:.2f}%")
 
 st.markdown("---")
 
 # ==============================================================================
-# 7. DISTRIBUSI SENTIMEN
+# 7. DISTRIBUSI SENTIMEN (VERSI RINGKAS)
 # ==============================================================================
 st.subheader("📊 Distribusi Sentimen Tweet")
-fig, ax = plt.subplots(figsize=(6, 4))
-ax.pie(jumlah_sentimen.values, labels=jumlah_sentimen.index, autopct="%1.1f%%", startangle=90)
-st.pyplot(fig)
+
+# Menggunakan kolom agar chart tidak melebar ke seluruh layar
+col_chart, col_text = st.columns([1, 1.5]) 
+
+with col_chart:
+    # Ukuran figure diperkecil menjadi (4, 3) agar lebih proporsional
+    fig, ax = plt.subplots(figsize=(4, 3))
+    
+    # Menggunakan warna default Matplotlib seperti sebelumnya
+    ax.pie(
+        jumlah_sentimen.values, 
+        labels=jumlah_sentimen.index, 
+        autopct="%1.1f%%", 
+        startangle=90
+    )
+    
+    # Menghilangkan margin berlebih di sekitar pie chart
+    plt.tight_layout()
+    st.pyplot(fig)
+
+with col_text:
+    # Memberikan ruang kosong atau teks ringkasan agar tata letak seimbang
+    st.write(" ")
+    st.write(" ")
+    st.markdown(f"""
+    **Keterangan:**
+    
+    Visualisasi ini menunjukkan perbandingan antara ulasan **Positif** dan **Negatif**. 
+    Dominasi ulasan saat ini berada pada sentimen **{jumlah_sentimen.idxmax()}** dengan total **{len(df)}** data yang dianalisis.
+    """)
 
 st.markdown("---")
 
@@ -122,26 +149,90 @@ st.markdown("---")
 # 8. WORDCLOUD & FREKUENSI KATA
 # ==============================================================================
 st.subheader("☁️ WordCloud dan Kata yang Sering Muncul")
+
+# 1. Definisi Stopwords Tambahan (Agar sinkron dengan WordCloud & Barchart)
+from wordcloud import STOPWORDS
+custom_stopwords = set(STOPWORDS)
+custom_stopwords.update([
+    'https', 'co', '...', 'amp', 'harga', 'water', 'facial', 
+    'wash', 'pakai', 'produk', 'banget', 'saya'
+])
+
 sentimen_pilihan = st.selectbox("Pilih Sentimen:", ["Positif", "Negatif"])
 
+# 2. Filter data berdasarkan pilihan
 df_filtered = df[df["sentimen"] == sentimen_pilihan]
-teks = " ".join(df_filtered["stemming_data"].astype(str))
 
-if teks.strip() != "":
-    col_wc, col_bar = st.columns(2)
+# 3. Proses Pembersihan Teks (Hapus stopwords dan kata pendek < 3 huruf)
+def clean_text_for_viz(text_series):
+    all_words = " ".join(text_series.astype(str)).lower().split()
+    # Hanya ambil kata yang bukan stopword dan panjangnya > 2 karakter
+    cleaned_words = [w for w in all_words if w not in custom_stopwords and len(w) > 2]
+    return cleaned_words
+
+list_kata = clean_text_for_viz(df_filtered["stemming_data"])
+teks_bersih = " ".join(list_kata)
+
+if teks_bersih.strip() != "":
+    # Tentukan parameter visual
+    if sentimen_pilihan == "Positif":
+        map_warna = "Greens"
+        judul_wc = "WordCloud Sentimen Positif"
+        judul_bar = "Frekuensi Kata Sentimen Positif"
+    else:
+        map_warna = "Reds"
+        judul_wc = "WordCloud Sentimen Negatif"
+        judul_bar = "Frekuensi Kata Sentimen Negatif"
+
+    col_wc, col_bar = st.columns([1, 1.2])
+    
     with col_wc:
-        wc = WordCloud(width=800, height=500, background_color="white").generate(teks)
+        # Generate WordCloud dari teks yang sudah bersih
+        wc = WordCloud(
+            width=800, 
+            height=500, 
+            background_color="white", 
+            colormap=map_warna,
+            # Stopwords dikosongkan karena teks sudah kita bersihkan manual di atas
+            stopwords=None 
+        ).generate(teks_bersih)
+        
         fig_wc, ax_wc = plt.subplots()
-        ax_wc.imshow(wc)
+        ax_wc.imshow(wc, interpolation='bilinear')
         ax_wc.axis("off")
+        ax_wc.set_title(judul_wc, fontsize=15, pad=10)
         st.pyplot(fig_wc)
+
     with col_bar:
-        kata = Counter(teks.split()).most_common(10)
-        words, counts = zip(*kata)
-        fig_bar, ax_bar = plt.subplots(figsize=(8, 5))
-        ax_bar.bar(words, counts)
+        # Hitung frekuensi dari list_kata yang sama dengan sumber WordCloud
+        counts_data = Counter(list_kata).most_common(20)
+        words, counts = zip(*counts_data)
+        
+        fig_bar, ax_bar = plt.subplots(figsize=(10, 6))
+        
+        # Gunakan warna warni tab10 agar mirip foto
+        colors = plt.cm.tab10(range(len(words)))
+        bars = ax_bar.bar(words, counts, color=colors)
+        
+        # Tambahkan label angka di atas bar (Persis seperti di foto)
+        for bar in bars:
+            yval = bar.get_height()
+            ax_bar.text(
+                bar.get_x() + bar.get_width()/2, 
+                yval + (max(counts) * 0.01),
+                int(yval), 
+                ha='center', va='bottom', fontsize=10, fontweight='bold'
+            )
+        
+        ax_bar.set_title(judul_bar, fontsize=14, fontweight='bold')
+        ax_bar.set_ylabel("Jumlah Kata", fontweight='bold')
+        ax_bar.set_xlabel("Kata-Kata Sering Muncul", fontweight='bold')
+        
         plt.xticks(rotation=45, ha="right")
+        plt.tight_layout()
         st.pyplot(fig_bar)
+else:
+    st.warning(f"Tidak ada data teks yang cukup untuk menampilkan visualisasi {sentimen_pilihan}.")
 
 st.markdown("---")
 
@@ -204,25 +295,26 @@ with col_desc:
 # Classification Report Table
 st.write("**Classification Report**")
 report_df = pd.DataFrame({
-    "precision": [1.00, 0.85, None, 0.92, 0.87],
-    "recall": [0.08, 1.00, None, 0.54, 0.85],
-    "f1-score": [0.14, 0.92, 0.85, 0.53, 0.79],
-    "support": [39, 197, 236, 236, 236]
+    "precision": [1.0000, 0.8485, None, 0.9242, 0.8736],
+    "recall": [0.1026, 1.0000, None, 0.5513, 0.8511],
+    "f1-score": [0.1860, 0.9180, 0.8511, 0.5520, 0.7966],
+    "support": [39, 196, 235, 235, 235]
 }, index=["Negatif", "Positif", "accuracy", "macro avg", "weighted avg"])
 
 st.table(report_df.fillna("-").style.format(precision=2))
 
 # Penjelasan Berdasarkan Hasil
+# Penjelasan Berdasarkan Hasil
 st.markdown(f"""
 ### 📊 Penjelasan Metrik Evaluasi
 
-1. **Accuracy (Akurasi)**: Merupakan ukuran tingkat kedekatan antara hasil prediksi dengan nilai sebenarnya. Berdasarkan hasil, sistem memiliki akurasi sebesar **{report_dict['accuracy']:.2f}**, yang berarti **85%** data uji berhasil diklasifikasikan dengan benar.
+1. **Accuracy (Akurasi)**: Merupakan ukuran tingkat kedekatan antara hasil prediksi dengan nilai sebenarnya. Berdasarkan hasil, sistem memiliki akurasi sebesar **{report_dict['accuracy']:.4f}**, yang berarti sekitar **{report_dict['accuracy']*100:.2f}%** data uji berhasil diklasifikasikan dengan benar.
 
-2. **Precision (Presisi)**: Merupakan ukuran yang menunjukkan jumlah dokumen relevan dari keseluruhan dokumen yang berhasil ditemukan oleh sistem. Berdasarkan hasil precision, kelas **Negatif memiliki nilai 1.00 (100%)**, artinya setiap kali sistem memprediksi negatif, prediksi tersebut selalu benar. Sedangkan kelas **Positif memiliki nilai 0.85 (85%)**.
+2. **Precision (Presisi)**: Merupakan ukuran yang menunjukkan ketepatan model dalam memprediksi kelas. Berdasarkan hasil, kelas **Negatif memiliki nilai 1.00 (100%)**, artinya setiap kali sistem memprediksi negatif, prediksi tersebut selalu benar. Sedangkan kelas **Positif memiliki nilai {report_dict['Positif']['precision']:.2f} ({report_dict['Positif']['precision']*100:.0f}%)**.
 
-3. **Recall**: Berfungsi sebagai alat ukur untuk menilai tingkat efektivitas sistem dalam menemukan kembali informasi. Berdasarkan hasil, kelas **Positif memiliki recall sempurna 1.00 (100%)**, namun kelas **Negatif hanya memiliki recall 0.08 (8%)**, yang menunjukkan sistem masih kesulitan mengidentifikasi ulasan negatif secara keseluruhan.
+3. **Recall**: Menilai tingkat efektivitas sistem dalam menemukan kembali semua data dari kelas tertentu. Kelas **Positif memiliki recall sempurna 1.00 (100%)**, yang berarti seluruh ulasan positif berhasil diidentifikasi. Namun, kelas **Negatif memiliki recall {report_dict['Negatif']['recall']:.2f} ({report_dict['Negatif']['recall']*100:.1f}%)**, menunjukkan sistem masih kesulitan menangkap sebagian besar ulasan negatif yang ada.
 
-4. **F1-Score**: Merupakan metrik evaluasi yang menggabungkan recall dan precision. Nilai F1-Score sebesar **0.92** pada kelas positif menunjukkan keseimbangan performa yang sangat baik untuk ulasan positif.
+4. **F1-Score**: Merupakan rata-rata harmonik antara precision dan recall. Nilai F1-Score sebesar **{report_dict['Positif']['f1-score']:.2f}** pada kelas positif menunjukkan performa yang sangat stabil, sementara nilai **{report_dict['Negatif']['f1-score']:.2f}** pada kelas negatif menunjukkan perlunya peningkatan performa pada identifikasi sentimen negatif.
 """)
 
 # ==============================================================================

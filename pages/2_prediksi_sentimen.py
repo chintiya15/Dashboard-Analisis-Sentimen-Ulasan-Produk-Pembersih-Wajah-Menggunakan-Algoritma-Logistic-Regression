@@ -171,7 +171,7 @@ if st.button("🔍 Mulai Prediksi"):
             "yang mengindikasikan kepuasan pengguna terhadap produk pembersih wajah."
         )
     else:
-        st.warning(
+        st.error(
             "Hasil prediksi menunjukkan bahwa ulasan memiliki sentimen **negatif**, "
             "yang mengindikasikan adanya ketidakpuasan pengguna terhadap produk pembersih wajah."
         )
