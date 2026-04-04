@@ -45,16 +45,16 @@ model, tfidf = load_model()
 # 4. DATA PENGUJIAN HASIL SENTIMEN
 # ==============================================================================
 # Confusion Matrix Data: [[TN, FP], [FN, TP]]
-cm_data = [[4, 35], [0, 196]]
-tn, fp, fn, tp = 4, 35, 0, 196
+cm_data = [[3, 17], [0, 98]]
+tn, fp, fn, tp = 3, 17, 0, 98
 
 # Data Classification Report Manual
 report_dict = {
-    "Negatif": {"precision": 1.0000, "recall": 0.1026, "f1-score": 0.1860, "support": 39},
-    "Positif": {"precision": 0.8485, "recall": 1.0000, "f1-score": 0.9180, "support": 196},
-    "accuracy": 0.8511,
-    "macro avg": {"precision": 0.9242, "recall": 0.5513, "f1-score": 0.5520, "support": 235},
-    "weighted avg": {"precision": 0.8736, "recall": 0.8511, "f1-score": 0.7966, "support": 235}
+    "Negatif": {"precision": 1.0000, "recall": 0.1500, "f1-score": 0.2609, "support": 20},
+    "Positif": {"precision": 0.8522, "recall": 1.0000, "f1-score": 0.9202, "support": 98},
+    "accuracy": 0.8559,
+    "macro avg": {"precision": 0.9242, "recall": 0.5513, "f1-score": 0.5520, "support": 118},
+    "weighted avg": {"precision": 0.8736, "recall": 0.8511, "f1-score": 0.7966, "support": 118}
 }
 
 akurasi_asli = report_dict["accuracy"]
@@ -295,10 +295,10 @@ with col_desc:
 # Classification Report Table
 st.write("**Classification Report**")
 report_df = pd.DataFrame({
-    "precision": [1.0000, 0.8485, None, 0.9242, 0.8736],
-    "recall": [0.1026, 1.0000, None, 0.5513, 0.8511],
-    "f1-score": [0.1860, 0.9180, 0.8511, 0.5520, 0.7966],
-    "support": [39, 196, 235, 235, 235]
+    "precision": [1.0000, 0.8522, None, 0.9261, 0.8772],
+    "recall": [0.1500, 1.0000, None, 0.5750, 0.8559],
+    "f1-score": [0.2609, 0.9202, 0.8559, 0.5905, 0.8084],
+    "support": [20, 98, 118, 118, 118]
 }, index=["Negatif", "Positif", "accuracy", "macro avg", "weighted avg"])
 
 st.table(report_df.fillna("-").style.format(precision=2))
