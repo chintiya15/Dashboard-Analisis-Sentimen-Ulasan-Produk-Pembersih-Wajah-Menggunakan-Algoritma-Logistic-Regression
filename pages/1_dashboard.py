@@ -322,7 +322,22 @@ st.markdown(f"""
 # ==============================================================================
 st.markdown("---")
 st.subheader("📝 Kesimpulan")
+
 if jumlah_sentimen.get("Positif", 0) > jumlah_sentimen.get("Negatif", 0):
-    st.success("Mayoritas ulasan menunjukkan sentimen **positif**, yang menandakan produk diterima dengan baik oleh pengguna.")
+    st.success(
+        "Analisis dilakukan berdasarkan beberapa kata kunci, yaitu 'pakai facial wash', "
+        "'facial wash cocok', 'facial wash jerawat', 'cleanser', dan 'pakai face wash', "
+        "serta nama merek seperti Wardah, Garnier, Cetaphil, Glad2Glow, Hada Labo, "
+        "Skintific, COSRX, dan Glow & Lovely. Hasil analisis menunjukkan bahwa mayoritas "
+        "ulasan memiliki sentimen **positif**, yang menandakan produk pembersih wajah "
+        "diterima dengan baik oleh pengguna."
+    )
 else:
-    st.warning("Mayoritas ulasan menunjukkan sentimen **negatif**, perlu dilakukan evaluasi kualitas produk.")
+    st.warning(
+        "Analisis dilakukan berdasarkan beberapa kata kunci, yaitu 'pakai facial wash', "
+        "'facial wash cocok', 'facial wash jerawat', 'cleanser', dan 'pakai face wash', "
+        "serta nama merek seperti Wardah, Garnier, Cetaphil, Glad2Glow, Hada Labo, "
+        "Skintific, COSRX, dan Glow & Lovely. Hasil analisis menunjukkan bahwa mayoritas "
+        "ulasan memiliki sentimen **negatif**, sehingga perlu dilakukan evaluasi terhadap "
+        "kualitas produk pembersih wajah."
+    )
