@@ -186,4 +186,4 @@ if st.button("🔍 Mulai Prediksi"):
         st.write("**3. Normalisasi:**", hasil["normalisasi"])
         st.write("**4. Tokenizing:**", hasil["tokenize"])
         st.write("**5. Stopword Removal:**", hasil["stopword_removal"])
-        st.write("**6. Stemming (Final):**", hasil["stemming_data"])
+        st.write("**6. Stemming:**", hasil["stemming_data"])
