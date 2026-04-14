@@ -8,7 +8,7 @@ import os
 # 1. KONFIGURASI HALAMAN
 # ==============================================================================
 st.set_page_config(
-    page_title="Prediksi Sentimen - Analisis Produk",
+    page_title="Prediksi Sentimen Ulasan Pembersih Wajah",
     layout="wide"
 )
 
