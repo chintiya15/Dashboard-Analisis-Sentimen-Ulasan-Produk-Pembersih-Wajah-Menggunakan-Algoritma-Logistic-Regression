@@ -136,9 +136,7 @@ if st.button("🔍 Mulai Prediksi"):
 
     st.markdown("---")
 
-    # ==============================================================================
     # 8. HASIL UTAMA
-    # ==============================================================================
     st.subheader("📊 Hasil Prediksi Sentimen")
 
     if sentimen == "Positif":
@@ -146,9 +144,7 @@ if st.button("🔍 Mulai Prediksi"):
     else:
         st.error(f"### 😠 Sentimen Ulasan: **{sentimen}**")
 
-    # ==============================================================================
     # 9. PROBABILITAS MODEL
-    # ==============================================================================
     st.subheader("📈 Probabilitas Keyakinan Model")
 
     prob_df = pd.DataFrame({
@@ -159,9 +155,7 @@ if st.button("🔍 Mulai Prediksi"):
     st.dataframe(prob_df, use_container_width=True)
     st.bar_chart(prob_df.set_index("Sentimen"))
 
-    # ==============================================================================
     # 10. KESIMPULAN OTOMATIS
-    # ==============================================================================
     st.markdown("---")
     st.subheader("📝 Kesimpulan Analisis")
 
@@ -176,9 +170,7 @@ if st.button("🔍 Mulai Prediksi"):
             "yang mengindikasikan adanya ketidakpuasan pengguna terhadap produk pembersih wajah."
         )
 
-    # ==============================================================================
     # 11. DETAIL PREPROCESSING
-    # ==============================================================================
     with st.expander("🔎 Lihat Detail Tahapan Preprocessing"):
         st.write("**Teks Asli:**", text)
         st.write("**1. Cleaning:**", hasil["cleaning"])

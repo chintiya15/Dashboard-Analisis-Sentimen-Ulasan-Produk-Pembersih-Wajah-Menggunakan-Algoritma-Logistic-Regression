@@ -9,17 +9,13 @@ import os
 # Import loader dari folder utils
 from utils.loader import load_model
 
-# ==============================================================================
 # 1. KONFIGURASI HALAMAN
-# ==============================================================================
 st.set_page_config(
     page_title="Dashboard Analisis Sentimen",
     layout="wide"
 )
 
-# ==============================================================================
 # 2. CUSTOM CSS
-# ==============================================================================
 def load_css():
     css_path = os.path.join("assets", "style.css")
     if os.path.exists(css_path):
@@ -28,9 +24,7 @@ def load_css():
 
 load_css()
 
-# ==============================================================================
 # 3. LOAD DATA & MODEL
-# ==============================================================================
 @st.cache_data
 def load_data():
     try:
@@ -41,9 +35,7 @@ def load_data():
 df = load_data()
 model, tfidf = load_model()
 
-# ==============================================================================
 # 4. DATA PENGUJIAN HASIL SENTIMEN
-# ==============================================================================
 # Confusion Matrix Data: [[TN, FP], [FN, TP]]
 cm_data = [[3, 17], [0, 98]]
 tn, fp, fn, tp = 3, 17, 0, 98
@@ -64,9 +56,7 @@ if "sentimen" not in df.columns:
 
 jumlah_sentimen = df["sentimen"].value_counts()
 
-# ==============================================================================
 # 5. HEADER DASHBOARD
-# ==============================================================================
 st.markdown('<div class="blue-header">📊 DASHBOARD ANALISIS SENTIMEN</div>', unsafe_allow_html=True)
 
 st.markdown(
@@ -80,9 +70,7 @@ st.info(f"Dashboard ini menampilkan hasil analisis menggunakan **Logistic Regres
 
 st.markdown("---")
 
-# ==============================================================================
 # 6. METRIC CARD
-# ==============================================================================
 st.subheader("📌 Ringkasan Data Sentimen")
 col1, col2, col3, col4 = st.columns(4)
 
@@ -108,9 +96,7 @@ with col4:
 
 st.markdown("---")
 
-# ==============================================================================
 # 7. DISTRIBUSI SENTIMEN (VERSI RINGKAS)
-# ==============================================================================
 st.subheader("📊 Distribusi Sentimen Tweet")
 
 # Menggunakan kolom agar chart tidak melebar ke seluruh layar
@@ -145,9 +131,7 @@ with col_text:
 
 st.markdown("---")
 
-# ==============================================================================
 # 8. WORDCLOUD & FREKUENSI KATA
-# ==============================================================================
 st.subheader("☁️ WordCloud dan Kata yang Sering Muncul")
 
 # 1. Definisi Stopwords Tambahan (Agar sinkron dengan WordCloud & Barchart)
@@ -236,9 +220,7 @@ else:
 
 st.markdown("---")
 
-# ==============================================================================
 # 9. CONTOH TWEET (FIXED WRAP TEXT)
-# ==============================================================================
 st.subheader("📋 Contoh Tweet Ulasan Produk Pembersih Wajah")
 
 sample_pos = df[df["sentimen"] == "Positif"].sample(
@@ -258,9 +240,7 @@ st.dataframe(
     use_container_width=True
 )
 
-# ==============================================================================
 # 10. EVALUASI MODEL (CONFUSION MATRIX & REPORT)
-# ==============================================================================
 st.subheader("🎯 Evaluasi Performa Model")
 
 col_cm, col_desc = st.columns([1.2, 1])
@@ -304,7 +284,6 @@ report_df = pd.DataFrame({
 st.table(report_df.fillna("-").style.format(precision=2))
 
 # Penjelasan Berdasarkan Hasil
-# Penjelasan Berdasarkan Hasil
 st.markdown(f"""
 ### 📊 Penjelasan Metrik Evaluasi
 
@@ -317,9 +296,7 @@ st.markdown(f"""
 4. **F1-Score**: Merupakan rata-rata harmonik antara precision dan recall. Nilai F1-Score sebesar **{report_dict['Positif']['f1-score']:.2f}** pada kelas positif menunjukkan performa yang sangat stabil, sementara nilai **{report_dict['Negatif']['f1-score']:.2f}** pada kelas negatif menunjukkan perlunya peningkatan performa pada identifikasi sentimen negatif.
 """)
 
-# ==============================================================================
 # 11. KESIMPULAN
-# ==============================================================================
 st.markdown("---")
 st.subheader("📝 Kesimpulan")
 
